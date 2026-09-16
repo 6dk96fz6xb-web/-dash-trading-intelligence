@@ -1,58 +1,105 @@
 # Dash Trading Intelligence
 
-Dash is an open-source research framework for finding short-term, post-earnings momentum opportunities in liquid U.S. stocks.
+Dash is an open-source research tool for ranking short-term, post-earnings momentum candidates in liquid U.S. stocks.
 
-Its purpose is to turn an earnings release into a transparent decision:
+It converts explicit earnings research into an auditable decision:
 
-- **ENTER** — strong report, strong guidance, confirmed market reaction, and acceptable liquidity/risk.
-- **WATCH** — promising setup that still needs confirmation.
-- **AVOID** — weak guidance, low liquidity, contradictory price action, excessive valuation risk, or an unfavorable market backdrop.
+- **ENTER** — strong score, verified data, and every hard gate passed.
+- **WATCH** — constructive score but not strong enough for entry.
+- **AVOID** — insufficient score or a liquidity/execution gate failed.
+- **DATA INCOMPLETE** — the primary earnings source is unverified or market data is stale.
 
-Dash is designed for research and decision support. It does **not** place trades and is not financial advice.
+Dash is research software. It does **not** fetch live data, connect to a broker, place trades, or provide financial advice.
 
-## Core philosophy
+## Dash v0.1
 
-A headline EPS beat is not enough. Dash weighs:
+The first working release includes:
 
-1. Revenue and EPS versus expectations.
-2. Forward guidance and management commentary.
-3. Margins, cash generation, and balance-sheet quality.
-4. After-hours or premarket price reaction.
-5. Trading volume, spread, market capitalization, and liquidity.
-6. The stock's reaction to previous earnings reports.
-7. Sector performance and the broader macro environment.
-8. Confirmation after the market opens.
+- A dependency-free Python scoring engine.
+- A validated CSV input format.
+- A command-line report with optional JSON output.
+- A read-only Streamlit dashboard.
+- Configurable minimum dollar volume, maximum spread, and minimum market cap.
+- Synthetic examples showing that hard gates override headline scores.
+- Automated unit tests and GitHub Actions.
 
-The initial trading hypothesis is that a strong earnings report followed by confirmed price-and-volume momentum may continue for one or two sessions. That hypothesis must be tested rather than assumed.
+## Quick start
 
-## Repository structure
+Requires Python 3.10 or newer.
 
-- [Strategy](docs/strategy.md) — the trading hypothesis, process, and safeguards.
-- [Scoring framework](docs/scoring.md) — a transparent 100-point model.
-- [Roadmap](ROADMAP.md) — proposed development stages.
-- [Contributing](CONTRIBUTING.md) — how to suggest ideas or submit improvements.
-- [Security](SECURITY.md) — rules for credentials and sensitive financial information.
+```bash
+git clone https://github.com/6dk96fz6xb-web/dash-trading-intelligence.git
+cd dash-trading-intelligence
+python -m venv .venv
+```
+
+Activate the virtual environment, then install and run:
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Run the scoring engine without the dashboard:
+
+```bash
+python dash_engine.py data/sample_earnings.csv
+python dash_engine.py data/sample_earnings.csv --json
+```
+
+Run tests:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+## Input data
+
+Use [`data/sample_earnings.csv`](data/sample_earnings.csv) as the template. Every row needs:
+
+- Company identity, report timing, and ISO-8601 timestamp.
+- Primary-source and market-data verification flags.
+- Dollar volume, spread, market cap, halt, and quote-quality inputs.
+- Six component scores totaling a maximum of 100.
+- Bull case, bear case, invalidation condition, and sources.
+
+The complete field definitions are in the [v0.1 data schema](docs/data-schema.md).
+
+## Score model
+
+| Component | Maximum points |
+|---|---:|
+| Forward guidance | 25 |
+| Reported results | 20 |
+| Market confirmation | 20 |
+| Liquidity and execution | 15 |
+| Business quality | 10 |
+| Context and technical setup | 10 |
+
+The score is evaluated only after hard gates. A thinly traded candidate can score 98/100 and still be labeled `AVOID`.
+
+## Project documentation
+
+- [Trading hypothesis and safeguards](docs/strategy.md)
+- [Scoring framework](docs/scoring.md)
+- [CSV data schema](docs/data-schema.md)
+- [Roadmap](ROADMAP.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security and privacy](SECURITY.md)
+- [Changelog](CHANGELOG.md)
 
 ## Privacy boundary
 
-This public repository must never contain:
+Never commit personal holdings, capital, entry prices, broker statements, account identifiers, credentials, tokens, paid datasets, or private trading history. Local private paths and common credential files are excluded through `.gitignore`.
 
-- Personal holdings, capital, entry prices, or broker statements.
-- Brokerage usernames, passwords, account numbers, cookies, or tokens.
-- API keys or paid-data credentials.
-- Private trading history unless fully anonymized and intentionally contributed.
-- Any mechanism that can place a live order without an explicit, separately reviewed design.
+## Status and limitations
 
-Use environment variables for credentials and keep local private files in ignored directories.
+Dash v0.1 uses manually researched inputs and analyst-assigned component scores. The scoring weights, thresholds, and one-to-two-session momentum hypothesis are provisional. They have not yet been validated through a bias-controlled, out-of-sample backtest.
 
-## Status
+## License
 
-Dash is at the **foundation/design stage**. The scoring weights and trading hypothesis have not yet been validated through robust out-of-sample testing.
-
-## Contributions
-
-Ideas, corrections, research, tests, and pull requests are welcome. Please explain the evidence behind strategy changes and disclose assumptions, data sources, transaction costs, and possible biases.
+MIT. See [LICENSE](LICENSE).
 
 ## Disclaimer
 
-This software and its documentation are for educational and research purposes only. Markets involve substantial risk. Outputs may be incomplete, delayed, or incorrect. Always verify source data and make independent decisions.
+This project is for education and research only. Markets involve substantial risk. Outputs may be incomplete, delayed, or incorrect. Verify every source and make independent decisions.
