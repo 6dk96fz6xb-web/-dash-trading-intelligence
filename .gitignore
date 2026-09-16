@@ -1,0 +1,45 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+
+# Private financial data
+private/
+data/private/
+portfolio/
+portfolios/
+broker-statements/
+transactions-private/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# JavaScript
+node_modules/
+dist/
+build/
+
+# Notebooks and tools
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Runtime output
+logs/
+*.log
+tmp/
+cache/
